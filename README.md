@@ -89,7 +89,7 @@ flowchart TD
 
 覆盖率 **100%**；不同 H3 网格共 **67,767 个**。这些点可用于按网格统计 GPS 点数、去重车辆数，以及进一步按日期或小时比较空间分布。现有地图文件的生成状态见第 4 节。
 
-数据统计结果见 [data_statistics.json](output/data_statistics.json)。H3 完成结果于由 `h3_snapshot_at` 单独标记统计时间；原始核验结果见 [h3_statistics.json](output/h3_statistics.json)。
+数据统计结果见 [data_statistics.json](pub/data_statistics.json)。H3 完成结果于由 `h3_snapshot_at` 单独标记统计时间；原始核验结果见 [h3_statistics.json](pub/h3_statistics.json)。
 
 ## 4. 统计图表及解释
 
@@ -97,19 +97,19 @@ flowchart TD
 
 ### 每日 GPS 点数变化
 
-[![每日 GPS 点数变化趋势](output/statistics/daily_gps_stats.png)](output/statistics/daily_gps_stats.html)
+[![每日 GPS 点数变化趋势](pub/statistics/daily_gps_stats.png)](pub/statistics/daily_gps_stats.html)
 
 由 `show_daily_gps_stats()` 绘制，按北京时间统计去重后的每日 GPS 点数，用于检查日期覆盖与记录量变化。首尾两天仅覆盖部分时段，不能直接与完整日期比较并推断车辆活动下降。查询也返回每日去重车辆数，但本图只展示点数。
 
 ### 每辆车 GPS 点数分布
 
-[![车辆 GPS 点数分布（P95以内）](output/statistics/gps_count_distribution.png)](output/statistics/gps_count_distribution.html)
+[![车辆 GPS 点数分布（P95以内）](pub/statistics/gps_count_distribution.png)](pub/statistics/gps_count_distribution.html)
 
-由 `show_gps_count_distribution()` 绘制，先统计每车点数，再仅展示点数不高于 P95 的车辆，使用 40 个分箱。用于判断各车辆的采样覆盖是否均衡；高点数尾部没有显示在图中，完整车辆统计见 [CSV](output/statistics/gps_count_distribution.csv)。
+由 `show_gps_count_distribution()` 绘制，先统计每车点数，再仅展示点数不高于 P95 的车辆，使用 40 个分箱。用于判断各车辆的采样覆盖是否均衡；高点数尾部没有显示在图中，完整车辆统计见 [CSV](pub/statistics/gps_count_distribution.csv)。
 
 ### GPS 相邻采样时间间隔
 
-[![GPS 采样时间间隔分布](output/statistics/daily_gps_interval.png)](output/statistics/daily_gps_interval.html)
+[![GPS 采样时间间隔分布](pub/statistics/daily_gps_interval.png)](pub/statistics/daily_gps_interval.html)
 
 由 `show_daily_gps_interval()` 绘制。同一车辆按采集时间、id 排序，用 LAG 计算相邻点时间差，再按整分钟分箱。查询仅包含 0～不足 60 分钟，图默认显示 0～30 分钟；0 分钟桶包括不足 60 秒的间隔，不一定是重复记录。虽然函数名包含 daily，这张图统计的是整个查询时段，并非按日分面。
 
@@ -119,14 +119,14 @@ flowchart TD
 
 空间结果以交互式地图查看：
 
-- [GPS 点叠加 H3 网格](output/h3/gps_h3_overlay.html)：默认抽样最多 5000 点，检查位置与网格对应关系；未绘制轨迹连线。
-- [H3 网格热力图](output/h3/h3_heatmap.html)：颜色编码每格 GPS 点数，悬停显示去重车辆数，用于观察采样活动集中的区域。
+- [GPS 点叠加 H3 网格](pub/h3/gps_h3_overlay.html)：默认抽样最多 5000 点，检查位置与网格对应关系；未绘制轨迹连线。
+- [H3 网格热力图](pub/h3/h3_heatmap.html)：颜色编码每格 GPS 点数，悬停显示去重车辆数，用于观察采样活动集中的区域。
 
-数据库 H3 回填已完成；两份 H3 HTML 已通过数据库聚合与抽样重新生成。HTML 是生成时的快照，不会随数据库更新自动变化。`output/h3_demo/` 是六条示例数据的验证地图，不用于正式分析。底图需联网加载。
+数据库 H3 回填已完成；两份 H3 HTML 已通过数据库聚合与抽样重新生成。HTML 是生成时的快照，不会随数据库更新自动变化。`pub/h3_demo/` 是六条示例数据的验证地图，不用于正式分析。底图需联网加载。
 
 ## 5. 分析问题与边界
 
-目前本项目围绕三个问题组织分析：**北京出租车活动热点在哪里、热点如何随时间变化、区域之间如何流动。** 在 [交互分析页面](output/activity/index.html) 中选择日期、小时和区域，结合统计图判断观测结果及数据覆盖。当前分析对象是这批出租车的 GPS 记录，结论适用于数据覆盖的车辆与时段。
+目前本项目围绕三个问题组织分析：**北京出租车活动热点在哪里、热点如何随时间变化、区域之间如何流动。** 在 [交互分析页面](pub/activity/index.html) 中选择日期、小时和区域，结合统计图判断观测结果及数据覆盖。当前分析对象是这批出租车的 GPS 记录，结论适用于数据覆盖的车辆与时段。
 
 ### 活动热点在哪里
 
@@ -220,7 +220,7 @@ with psycopg.connect(get_database_url()) as conn:
 
 ## 8. 出租车活动交互分析页面
 
-运行 `.venv/bin/python build_activity_dashboard.py`，从 `valid_points_clean` 的完整 H3 数据生成 [活动分析页面](output/activity/index.html)。页面包含日期、小时和指标筛选：
+运行 `.venv/bin/python build_activity_dashboard.py`，从 `valid_points_clean` 的完整 H3 数据生成 [活动分析页面](pub/activity/index.html)。页面包含日期、小时和指标筛选：
 
 - 活动热点：H3 分辨率 7，以去重车辆数或 GPS 点数着色，显示 Top 10 网格。
 - 小时变化：地图随小时滑块切换，配热点网格 × 小时的车辆数矩阵；同一日期各小时采用固定色标。

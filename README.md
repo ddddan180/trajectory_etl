@@ -89,7 +89,7 @@ flowchart TD
 
 覆盖率 **100%**；不同 H3 网格共 **67,767 个**。这些点可用于按网格统计 GPS 点数、去重车辆数，以及进一步按日期或小时比较空间分布。现有地图文件的生成状态见第 4 节。
 
-数据统计结果见 [data_statistics.json](https://ddddan180.github.io/trajectory_etl/pub/data_statistics.json)。H3 完成结果于由 `h3_snapshot_at` 单独标记统计时间；原始核验结果见 [h3_statistics.json](https://ddddan180.github.io/trajectory_etl/pub/h3_statistics.json)。
+数据统计结果见 [data_statistics.json](https://ddddan180.github.io/trajectory_etl/pub/data_statistics.json)。H3 完成结果由 `h3_snapshot_at` 单独标记统计时间；原始核验结果见 [h3_statistics.json](https://ddddan180.github.io/trajectory_etl/pub/h3_statistics.json)。
 
 ## 4. 统计图表及解释
 
@@ -97,19 +97,19 @@ flowchart TD
 
 ### 每日 GPS 点数变化
 
-[![每日 GPS 点数变化趋势](https://ddddan180.github.io/trajectory_etl/pub/statistics/daily_gps_stats.png)](https://ddddan180.github.io/trajectory_etl/pub/statistics/daily_gps_stats.html)
+[![每日 GPS 点数变化趋势](docs/pub/statistics/daily_gps_stats.png)](https://ddddan180.github.io/trajectory_etl/pub/statistics/daily_gps_stats.html)
 
 由 `show_daily_gps_stats()` 绘制，按北京时间统计去重后的每日 GPS 点数，用于检查日期覆盖与记录量变化。首尾两天仅覆盖部分时段，不能直接与完整日期比较并推断车辆活动下降。查询也返回每日去重车辆数，但本图只展示点数。
 
 ### 每辆车 GPS 点数分布
 
-[![车辆 GPS 点数分布（P95以内）](https://ddddan180.github.io/trajectory_etl/pub/statistics/gps_count_distribution.png)](https://ddddan180.github.io/trajectory_etl/pub/statistics/gps_count_distribution.html)
+[![车辆 GPS 点数分布（P95以内）](docs/pub/statistics/gps_count_distribution.png)](https://ddddan180.github.io/trajectory_etl/pub/statistics/gps_count_distribution.html)
 
-由 `show_gps_count_distribution()` 绘制，先统计每车点数，再仅展示点数不高于 P95 的车辆，使用 40 个分箱。用于判断各车辆的采样覆盖是否均衡；高点数尾部没有显示在图中，完整车辆统计见 [CSV](https://ddddan180.github.io/trajectory_etl/pub/statistics/gps_count_distribution.csv)。
+由 `show_gps_count_distribution()` 绘制，先统计每车点数，再仅展示点数不高于 P95 的车辆，使用 40 个分箱。用于判断各车辆的采样覆盖是否均衡；高点数尾部没有显示在图中，完整车辆统计可重新导出为 `export/output/statistics/gps_count_distribution.csv`，发布时复制到 `docs/pub/statistics/`。
 
 ### GPS 相邻采样时间间隔
 
-[![GPS 采样时间间隔分布](https://ddddan180.github.io/trajectory_etl/pub/statistics/daily_gps_interval.png)](https://ddddan180.github.io/trajectory_etl/pub/statistics/daily_gps_interval.html)
+[![GPS 采样时间间隔分布](docs/pub/statistics/daily_gps_interval.png)](https://ddddan180.github.io/trajectory_etl/pub/statistics/daily_gps_interval.html)
 
 由 `show_daily_gps_interval()` 绘制。同一车辆按采集时间、id 排序，用 LAG 计算相邻点时间差，再按整分钟分箱。查询仅包含 0～不足 60 分钟，图默认显示 0～30 分钟；0 分钟桶包括不足 60 秒的间隔，不一定是重复记录。虽然函数名包含 daily，这张图统计的是整个查询时段，并非按日分面。
 
@@ -122,11 +122,9 @@ flowchart TD
 - [GPS 点叠加 H3 网格](https://ddddan180.github.io/trajectory_etl/pub/h3/gps_h3_overlay.html)：默认抽样最多 5000 点，检查位置与网格对应关系；未绘制轨迹连线。
 - [H3 网格热力图](https://ddddan180.github.io/trajectory_etl/pub/h3/h3_heatmap.html)：颜色编码每格 GPS 点数，悬停显示去重车辆数，用于观察采样活动集中的区域。
 
-数据库 H3 回填已完成；两份 H3 HTML 已通过数据库聚合与抽样重新生成。HTML 是生成时的快照，不会随数据库更新自动变化。`pub/h3_demo/` 是六条示例数据的验证地图，不用于正式分析。底图需联网加载。
-
 ## 5. 分析问题与边界
 
-目前本项目围绕三个问题组织分析：**北京出租车活动热点在哪里、热点如何随时间变化、区域之间如何流动。** 在 [交互分析页面](pub/activity/index.html) 中选择日期、小时和区域，结合统计图判断观测结果及数据覆盖。当前分析对象是这批出租车的 GPS 记录，结论适用于数据覆盖的车辆与时段。
+目前本项目围绕三个问题组织分析：**北京出租车活动热点在哪里、热点如何随时间变化、区域之间如何流动。** 在 [交互分析页面](https://ddddan180.github.io/trajectory_etl/pub/activity/index.html) 中选择日期、小时和区域，结合统计图判断观测结果及数据覆盖。当前分析对象是这批出租车的 GPS 记录，结论适用于数据覆盖的车辆与时段。
 
 ### 活动热点在哪里
 
@@ -157,16 +155,46 @@ flowchart TD
 - 数据没有载客状态、订单、乘客或道路通行信息。热点、时间变化和观测转移不能直接证明乘客需求、载客率、通勤目的、拥堵程度或因果关系。
 - 图表和交互页面是生成时的数据快照，不会随数据库自动更新。比较结果时应使用同一统计时段、指标、空间尺度和数据版本，并报告观测车辆数与覆盖情况。
 
-## 6. 代码文件说明
+## 6. 代码目录与文件说明
 
-| 文件                   | 职责                                                        |
-| ---------------------- | ----------------------------------------------------------- |
-| `config.py`            | 从项目根目录 `.env` 加载 DATABASE_URL；已有进程环境变量优先 |
-| `etl.py`               | TXT 解析入库、区域筛选、去重定义、统计查询、绘图数据读取    |
-| `gps_h3.py`            | 经纬度转 H3、清洗表历史回填、逐批提交与日志                 |
-| `charts.py`            | 三个质量统计图、GeoJSON 网格边界、两个地图 Figure           |
-| `visualize_h3.py`      | 地图命令行入口与 HTML 导出                                  |
-| `export_statistics.py` | 从清洗表导出三个统计图的 PNG、HTML 和 CSV                   |
+```text
+trajectory_etl/
+├── README.md
+├── requirements.txt
+├── config.py
+├── etl.py
+├── gps_h3.py
+├── charts.py
+├── visualize_h3.py
+├── export/
+│   ├── activity_dashboard.html
+│   ├── build_activity_dashboard.py
+│   ├── export_statistics.py
+│   └── export_statistics_images.py
+├── docs/
+│   └── pub/
+│       ├── data_statistics.json
+│       ├── h3_statistics.json
+│       ├── activity/
+│       ├── h3/
+│       └── statistics/
+└── log/
+    └── error.log
+```
+
+| 文件 / 目录                          | 职责                                                    |
+| ------------------------------------ | ------------------------------------------------------- |
+| `config.py`                          | 从项目根目录 `.env` 加载 DATABASE_URL；进程环境变量优先 |
+| `etl.py`                             | TXT 解析入库、清洗与统计查询                            |
+| `gps_h3.py`                          | 清洗表 H3 回填、逐批提交和进度日志                      |
+| `charts.py`                          | 质量统计图、H3 边界和两张地图的绘图函数                 |
+| `visualize_h3.py`                    | 数据库聚合热力图、抽样叠加点及 HTML 导出                |
+| `export/build_activity_dashboard.py` | 聚合热点、小时变化与区域转移，生成交互页面              |
+| `export/activity_dashboard.html`     | 页面模板；浏览器访问生成后的页面，而非此模板            |
+| `export/export_statistics.py`        | 从清洗表导出三张统计图的 PNG、HTML 和 CSV               |
+| `export/export_statistics_images.py` | 基于统计 JSON 导出补充图片                              |
+| `docs/pub/`                          | GitHub Pages 发布文件：图表、地图与统计快照             |
+| `log/error.log`                      | 数据解析异常日志                                        |
 
 ## 7. 运行步骤
 
@@ -211,7 +239,7 @@ with psycopg.connect(get_database_url()) as conn:
 
 ```bash
 .venv/bin/python gps_h3.py --batch-size 10000
-.venv/bin/python visualize_h3.py --max-overlay-points 5000
+.venv/bin/python visualize_h3.py --max-overlay-points 5000 --output-dir docs/pub/h3
 ```
 
 回填每批提交；失败后重新运行会跳过已填 H3 的记录。
@@ -220,7 +248,7 @@ with psycopg.connect(get_database_url()) as conn:
 
 ## 8. 出租车活动交互分析页面
 
-运行 `.venv/bin/python build_activity_dashboard.py`，从 `valid_points_clean` 的完整 H3 数据生成 [活动分析页面](https://ddddan180.github.io/trajectory_etl/pub/activity/index.html)。页面包含日期、小时和指标筛选：
+运行 `export/build_activity_dashboard.py`，从 `valid_points_clean` 的完整 H3 数据生成 [活动分析页面](https://ddddan180.github.io/trajectory_etl/pub/activity/index.html)。页面包含日期、小时和指标筛选：
 
 - 活动热点：H3 分辨率 7，以去重车辆数或 GPS 点数着色，显示 Top 10 网格。
 - 小时变化：地图随小时滑块切换，配热点网格 × 小时的车辆数矩阵；同一日期各小时采用固定色标。

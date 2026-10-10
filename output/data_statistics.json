@@ -1,0 +1,11 @@
+{
+  "snapshot_at": "2026-10-09T21:14:33.320126+08:00",
+  "source": "public.valid_points_clean",
+  "clean": [16162423, 10290, "2008-02-02 13:30:44+08:00", "2008-02-08 17:39:19+08:00", 16162423, 67767],
+  "original_count": 17662885,
+  "region_count": 17486528,
+  "vehicle_distribution": [1.0, 1248.0, 2927.2999999999956, 148162.0],
+  "h3_snapshot_at": "2026-10-09T21:54:19.788153+08:00",
+  "h3_empty_strings": 0,
+  "snapshot_note": "snapshot_at 对应基础统计与三张统计图"
+}
